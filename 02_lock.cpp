@@ -18,13 +18,15 @@ public:
 
 void f(A &from, A &to)
 {
-    std::unique_lock l1(from.m, std::adopt_lock);
+    // std::scoped_lock l(from.m,to.m);
+    std::lock(from.m, to.m);
+    std::lock_guard l1(from.m, std::adopt_lock);
     // std::lock(from.m);
     cout << &from.m << " to:" << &to.m << endl;
-    cout << " lock " << from.x << " lock?:" << int(l1.owns_lock()) << endl;
+    cout << " lock " << from.x << endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    std::unique_lock l2(to.m, std::adopt_lock);
-    cout << " lock " << to.x << " lock?:" << int(l2.owns_lock()) << endl;
+    std::lock_guard l2(to.m, std::adopt_lock);
+    cout << " lock " << to.x << endl;
     from.x--;
     to.x++;
 }
